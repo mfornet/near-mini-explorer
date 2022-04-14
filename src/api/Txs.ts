@@ -1,22 +1,5 @@
-import * as nearAPI from "near-api-js";
-import { NearProtocolConfig } from "near-api-js/lib/providers/provider";
-import NearRpcResult, { ViewAccessKeyList } from "../near-api/types";
-
-type AccountId = string;
-
-const OPTIONS = {
-    networkId: "mainnet",
-    keyStore: new nearAPI.keyStores.BrowserLocalStorageKeyStore(),
-    nodeUrl: "https://archival-rpc.mainnet.near.org/",
-    walletUrl: "https://wallet.mainnet.near.org",
-    helperUrl: "https://helper.mainnet.near.org",
-    explorerUrl: "https://explorer.mainnet.near.org",
-    headers: {},
-};
-
-interface GensisConfigResponse extends NearProtocolConfig {
-    genesis_height: number;
-}
+import { genesisConfig, getStatus, viewAccessKeyList } from "../near-api/near";
+import { AccountId, unwrap } from "../near-api/types";
 
 interface KeyState {
     publicKey: string;
@@ -29,36 +12,17 @@ async function getKeysState(
 ): Promise<KeyState[]> {
     let content;
     while (true) {
-        const result = await fetch(
-            new Request(OPTIONS.nodeUrl, {
-                method: "post",
-                body: JSON.stringify({
-                    jsonrpc: "2.0",
-                    id: "dontcare",
-                    method: "query",
-                    params: {
-                        request_type: "view_access_key_list",
-                        block_id: height,
-                        account_id: accountId,
-                    },
-                }),
-                headers: { "Content-Type": "application/json" },
-            })
-        );
-
-        content = await result.json();
-        if (content.result !== undefined) {
+        content = await viewAccessKeyList(accountId, height);
+        if ("result" in content) {
             break;
         }
         console.log("Block not available:", { height });
         height -= 1;
     }
 
-    const keys = (content as NearRpcResult<ViewAccessKeyList>).result.keys.map(
-        (key) => {
-            return { publicKey: key.public_key, nonce: key.access_key.nonce };
-        }
-    );
+    const keys = unwrap(content).result.keys.map((key) => {
+        return { publicKey: key.public_key, nonce: key.access_key.nonce };
+    });
 
     keys.sort((a, b) => {
         if (a.publicKey === b.publicKey) return a.nonce < b.nonce ? -1 : +1;
@@ -118,12 +82,8 @@ export default async function downloadAccountIdTransaction(
     accountId: AccountId,
     cb: (block: number) => Promise<void>
 ): Promise<void> {
-    const near = await nearAPI.connect(OPTIONS);
-    const result = await near.connection.provider.experimental_genesisConfig();
-
-    const lo = (result as GensisConfigResponse).genesis_height + 1000;
-    const hi = (await near.connection.provider.status()).sync_info
-        .latest_block_height;
+    const lo = (await genesisConfig()).result.genesis_height;
+    const hi = (await getStatus()).result.sync_info.latest_block_height;
 
     await parallelSearch(
         lo,
