@@ -1,7 +1,6 @@
-// Download transactions
 import * as nearAPI from "near-api-js";
 import { NearProtocolConfig } from "near-api-js/lib/providers/provider";
-import NearRpcResult, { ViewAccessKeyList } from "./near-rpc-types";
+import NearRpcResult, { ViewAccessKeyList } from "../near-api/types";
 
 type AccountId = string;
 
@@ -24,10 +23,7 @@ interface KeyState {
     nonce: number;
 }
 
-let __LOCK_DOWNLOAD_TX = false;
-
 async function getKeysState(
-    near: nearAPI.Near,
     accountId: AccountId,
     height: number
 ): Promise<KeyState[]> {
@@ -89,7 +85,7 @@ async function parallelSearch(
     loVal: KeyState[] | null = null,
     hiVal: KeyState[] | null = null,
     compute: (position: number) => Promise<KeyState[]>,
-    step: (position: number) => void
+    step: (position: number) => Promise<void>
 ) {
     if (loVal === null) {
         loVal = await compute(lo);
@@ -105,7 +101,7 @@ async function parallelSearch(
     }
 
     if (lo + 1 === hi) {
-        step(hi);
+        await step(hi);
         return;
     }
 
@@ -120,37 +116,23 @@ async function parallelSearch(
 
 export default async function downloadAccountIdTransaction(
     accountId: AccountId,
-    cb: (list: number[]) => void
+    cb: (block: number) => Promise<void>
 ): Promise<void> {
-    if (!__LOCK_DOWNLOAD_TX) {
-        __LOCK_DOWNLOAD_TX = true;
+    const near = await nearAPI.connect(OPTIONS);
+    const result = await near.connection.provider.experimental_genesisConfig();
 
-        let list: number[] = [];
+    const lo = (result as GensisConfigResponse).genesis_height + 1000;
+    const hi = (await near.connection.provider.status()).sync_info
+        .latest_block_height;
 
-        const near = await nearAPI.connect(OPTIONS);
-        const result =
-            await near.connection.provider.experimental_genesisConfig();
-
-        const lo = (result as GensisConfigResponse).genesis_height + 1000;
-        const hi = (await near.connection.provider.status()).sync_info
-            .latest_block_height;
-
-        await getKeysState(near, accountId, hi);
-        await parallelSearch(
-            lo,
-            hi,
-            null,
-            null,
-            async (position) => {
-                return getKeysState(near, accountId, position);
-            },
-            (position) => {
-                list.push(position);
-                list.sort();
-                cb(list);
-            }
-        );
-
-        __LOCK_DOWNLOAD_TX = false;
-    }
+    await parallelSearch(
+        lo,
+        hi,
+        null,
+        null,
+        async (position) => {
+            return getKeysState(accountId, position);
+        },
+        cb
+    );
 }
