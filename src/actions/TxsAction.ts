@@ -1,17 +1,18 @@
+import { Block, Transaction } from "../near-api/types";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getBlock, getChunk } from "../near-api/near";
-import { Transaction } from "../near-api/types";
 import { RootState } from "../store";
-import downloadAccountIdTransaction from "../api/Txs";
+import downloadAccountIdTransaction from "../api/txs";
 
 export interface IndexedTransaction {
     tx: Transaction;
-    block: number;
+    block: Block;
+    blockHeight: number;
     index: number;
 }
 
 function key(tx: IndexedTransaction) {
-    return tx.block * 1000 + tx.index;
+    return tx.blockHeight * 1000 + tx.index;
 }
 
 export const counterSlice = createSlice({
@@ -58,10 +59,10 @@ export const fetchTxs = createAsyncThunk(
 
         thunkAPI.dispatch(start(1));
         await downloadAccountIdTransaction(accountId, async (blockHeight) => {
-            getBlock(blockHeight).then(async (block) => {
-                const _block = block.result;
+            getBlock(blockHeight).then(async (block_) => {
+                const block = block_.result;
                 const chunks = await Promise.all(
-                    _block.chunks.map(async (chunk) => {
+                    block.chunks.map(async (chunk) => {
                         return await getChunk(chunk.chunk_hash);
                     })
                 );
@@ -77,7 +78,8 @@ export const fetchTxs = createAsyncThunk(
                                 thunkAPI.dispatch(
                                     newTransaction({
                                         tx,
-                                        block: blockHeight,
+                                        block,
+                                        blockHeight,
                                         index,
                                     })
                                 );

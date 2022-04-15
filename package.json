@@ -19,6 +19,7 @@
     "@types/react-redux": "^7.1.23",
     "@types/redux-thunk": "^2.1.0",
     "@types/request-promise": "^4.1.48",
+    "bignumber.js": "^9.0.2",
     "buffer": "^6.0.3",
     "near-api-js": "^0.44.2",
     "react": "^18.0.0",

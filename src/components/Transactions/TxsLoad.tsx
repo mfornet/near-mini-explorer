@@ -1,11 +1,14 @@
-import { AccountId } from "../../near-api/types";
+import { AccountId, TransactionWithBlock } from "../../near-api/types";
 import TxsProgressBar from "./TxsProgressBar";
 import TxsTimelime from "./TxsTimelime";
 import savedData from "../../assets/savedData.json";
-import { IndexedTransaction } from "../../actions/TxsAction";
+import { fetchTxs, IndexedTransaction } from "../../actions/TxsAction";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store";
+import { useEffect } from "react";
 
 export default function TxsLoad(props: { accountId: AccountId }) {
-    const data = savedData as IndexedTransaction[];
+    const data = savedData as TransactionWithBlock[];
     // const dispatch = useDispatch();
 
     // const data = useSelector<RootState, IndexedTransaction[]>(
@@ -19,7 +22,17 @@ export default function TxsLoad(props: { accountId: AccountId }) {
     return (
         <div>
             <TxsProgressBar />
-            <TxsTimelime txs={data.map((iTx) => iTx.tx)} />
+            <TxsTimelime
+                txs={data
+                    .slice()
+                    .reverse()
+                    .map((iTx) => {
+                        return {
+                            tx: iTx.tx,
+                            block: iTx.block,
+                        };
+                    })}
+            />
         </div>
     );
 }

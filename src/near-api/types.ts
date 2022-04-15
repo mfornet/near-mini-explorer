@@ -1,5 +1,6 @@
 export type AccountId = string;
 export type CryptoHash = string;
+export type U256 = string;
 
 export interface NearRpcResultOk<T> {
     id: AccountId;
@@ -47,20 +48,76 @@ export interface BlockChunk {
     chunk_hash: CryptoHash;
 }
 
+export interface BlockHeader {
+    timestamp: number;
+    timestamp_nanosec: string;
+}
+
 export interface Block {
     author: AccountId;
     chunks: BlockChunk[];
+    header: BlockHeader;
 }
 
 export interface Receipt {
     predecessor_id: AccountId;
     receiver_id: AccountId;
 }
+// actions: [{…}]
+// hash: "ArjgnoQMXzsMbRoF5ozCahSHdfo5wZRZRwcnL3mUzyJm"
+// nonce: 40263489000123
+// public_key: "ed25519:GZ54Kf2CnwwTPaaXSogxhfBUgd9UoUg76ByaeryytfBg"
+// receiver_id: "ff3e7100628b3727ab7e587835be7a28580ab6ddc7e4b296c1703d122a426303"
+// signature: "ed25519:AYtnZcqjLqiUBpkEtJwgXpeZsAShDfwThuZJ7ikH2J1JbQGfvGJGAhv1GSPZ9AKYVbr4swh4ZiELtTKfTiEE8YF"
+// signer_id: "marcelo.near"
+
+export interface ActionTransfer {
+    Transfer: {
+        deposit: U256;
+    };
+}
+export interface ActionAddKey {
+    AddKey: any;
+}
+
+export interface ActionFunctionCall {
+    FunctionCall: {
+        args: string;
+        deposit: U256;
+        gas: number;
+        method_name: string;
+    };
+}
+
+export type Action = ActionTransfer | ActionAddKey | ActionFunctionCall;
+
+export function isInstanceOfTransfer(action: Action): action is ActionTransfer {
+    return "Transfer" in action;
+}
+
+export function isInstanceOfAddKey(action: Action): action is ActionAddKey {
+    return "AddKey" in action;
+}
+
+export function isInstanceOfFunctionCall(
+    action: Action
+): action is ActionFunctionCall {
+    return "FunctionCall" in action;
+}
 
 export interface Transaction {
-    receiver_id: AccountId;
-    signer_id: AccountId;
+    actions: Action[];
     hash: CryptoHash;
+    nonce: number;
+    public_key: CryptoHash;
+    receiver_id: AccountId;
+    signature: CryptoHash;
+    signer_id: AccountId;
+}
+
+export interface TransactionWithBlock {
+    tx: Transaction;
+    block: Block;
 }
 
 export interface Chunk {

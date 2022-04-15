@@ -1,37 +1,100 @@
-import FastfoodIcon from "@mui/icons-material/Fastfood";
-import TimelineConnector from "@mui/lab/TimelineConnector";
-import TimelineContent from "@mui/lab/TimelineContent";
-import TimelineDot from "@mui/lab/TimelineDot";
-import TimelineItem from "@mui/lab/TimelineItem";
-import TimelineOppositeContent from "@mui/lab/TimelineOppositeContent";
-import TimelineSeparator from "@mui/lab/TimelineSeparator";
-import Typography from "@mui/material/Typography";
-import { Transaction } from "../../near-api/types";
+import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+import KeyIcon from "@mui/icons-material/Key";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import {
+    isInstanceOfAddKey,
+    isInstanceOfFunctionCall,
+    isInstanceOfTransfer,
+    TransactionWithBlock,
+} from "../../near-api/types";
+import { yoctoToNear } from "../../utils/format";
+import { getFunctionCallItem } from "../../library/library";
+import { TxItemBase } from "./TxItemBase";
 
-export default function TxItem(props: { tx: Transaction }) {
-    return (
-        <TimelineItem>
-            <TimelineOppositeContent
-                sx={{ m: "auto 0" }}
-                align="right"
-                variant="body2"
-                color="text.secondary"
-            >
-                9:30 am
-            </TimelineOppositeContent>
-            <TimelineSeparator>
-                <TimelineConnector />
-                <TimelineDot color="success">
-                    <FastfoodIcon />
-                </TimelineDot>
-                <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent sx={{ py: "12px", px: 2 }}>
-                <Typography variant="h6" component="span">
-                    Eat
-                </Typography>
-                <Typography>Because you need strength</Typography>
-            </TimelineContent>
-        </TimelineItem>
-    );
+export default function TxItem(props: { tx: TransactionWithBlock }) {
+    // TODO: Handle case of failed transactions
+    const { tx, block } = props.tx;
+
+    if (tx.actions.length === 0) {
+        return (
+            <TxItemBase
+                icon={<HelpOutlineOutlinedIcon />}
+                hash={tx.hash}
+                color="grey"
+                timestamp_nanosec={block.header.timestamp}
+                title="Unknown"
+                description="Number of actions equal 0"
+            />
+        );
+    }
+
+    if (tx.actions.length > 1) {
+        return (
+            <TxItemBase
+                icon={<HelpOutlineOutlinedIcon />}
+                hash={tx.hash}
+                color="grey"
+                timestamp_nanosec={block.header.timestamp}
+                title="Unknown"
+                description="Number of actions greater than one"
+            />
+        );
+    }
+
+    const action = tx.actions[0];
+
+    if (isInstanceOfAddKey(action)) {
+        // TODO: Disambiguate between Full Access Key & Function Call Keys
+        return (
+            <TxItemBase
+                icon={<KeyIcon />}
+                hash={tx.hash}
+                color="success"
+                timestamp_nanosec={block.header.timestamp}
+                title="Add Key"
+                description=""
+            />
+        );
+    } else if (isInstanceOfFunctionCall(action)) {
+        const result = getFunctionCallItem(action, tx, block);
+
+        if (result === null) {
+            return (
+                <TxItemBase
+                    icon={<HelpOutlineOutlinedIcon />}
+                    hash={tx.hash}
+                    color="grey"
+                    timestamp_nanosec={block.header.timestamp}
+                    title="Unhandled Function Call"
+                    description={`${tx.receiver_id}.${action.FunctionCall.method_name}()`}
+                />
+            );
+        } else {
+            return result;
+        }
+    } else if (isInstanceOfTransfer(action)) {
+        return (
+            <TxItemBase
+                icon={<AttachMoneyIcon />}
+                hash={tx.hash}
+                color="primary"
+                timestamp_nanosec={block.header.timestamp}
+                title="Transfer"
+                description={`Send ${yoctoToNear(
+                    action.Transfer.deposit
+                )} Ⓝ to ${tx.receiver_id}`}
+            />
+        );
+    } else {
+        return (
+            <TxItemBase
+                icon={<HelpOutlineOutlinedIcon />}
+                hash={tx.hash}
+                color="grey"
+                timestamp_nanosec={block.header.timestamp}
+                title="Unknown"
+                description=""
+            />
+        );
+    }
 }

@@ -13,6 +13,7 @@ const container = document.getElementById("root");
 const root = createRoot(container!);
 
 root.render(
+    // TODO: Routes: Fetch account id from the URL
     <React.StrictMode>
         <Provider store={store}>
             <App />
