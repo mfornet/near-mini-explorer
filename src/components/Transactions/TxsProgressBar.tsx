@@ -23,23 +23,22 @@ function LinearProgressWithLabel(
     );
 }
 
-export default function TxsProgressBar() {
-    const [progress, setProgress] = useState(10);
+export default function TxsProgressBar(props: {
+    total: number;
+    current: number;
+}) {
+    console.log(props);
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setProgress((prevProgress) =>
-                prevProgress >= 100 ? 10 : prevProgress + 10
-            );
-        }, 800);
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
+    if (props.total === 0 || props.current >= props.total) {
+        return <div></div>;
+    }
+
+    const ratio = props.current / props.total;
+    const progress = Math.pow(ratio, 5);
 
     return (
         <Box sx={{ width: "100%" }}>
-            <LinearProgressWithLabel value={progress} />
+            <LinearProgressWithLabel value={progress * 100} />
         </Box>
     );
 }

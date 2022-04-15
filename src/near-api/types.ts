@@ -63,13 +63,6 @@ export interface Receipt {
     predecessor_id: AccountId;
     receiver_id: AccountId;
 }
-// actions: [{…}]
-// hash: "ArjgnoQMXzsMbRoF5ozCahSHdfo5wZRZRwcnL3mUzyJm"
-// nonce: 40263489000123
-// public_key: "ed25519:GZ54Kf2CnwwTPaaXSogxhfBUgd9UoUg76ByaeryytfBg"
-// receiver_id: "ff3e7100628b3727ab7e587835be7a28580ab6ddc7e4b296c1703d122a426303"
-// signature: "ed25519:AYtnZcqjLqiUBpkEtJwgXpeZsAShDfwThuZJ7ikH2J1JbQGfvGJGAhv1GSPZ9AKYVbr4swh4ZiELtTKfTiEE8YF"
-// signer_id: "marcelo.near"
 
 export interface ActionTransfer {
     Transfer: {

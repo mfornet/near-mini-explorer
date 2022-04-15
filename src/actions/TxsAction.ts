@@ -22,6 +22,8 @@ export const counterSlice = createSlice({
             active: false,
             lastBlock: 0,
             started: 0,
+            searched: 0,
+            rangeSize: 0,
         },
         transactions: [] as IndexedTransaction[],
     },
@@ -35,13 +37,21 @@ export const counterSlice = createSlice({
             state.activeSearch.started = Date.now();
             state.activeSearch.active = true;
         },
+        updateProgress: (state, action: { payload: number }) => {
+            if (state.activeSearch.rangeSize === 0) {
+                state.activeSearch.rangeSize = action.payload;
+            } else {
+                state.activeSearch.searched += action.payload;
+            }
+        },
         finish: (state) => {
             state.activeSearch.active = false;
         },
     },
 });
 
-export const { newTransaction, start, finish } = counterSlice.actions;
+export const { newTransaction, start, finish, updateProgress } =
+    counterSlice.actions;
 
 export default counterSlice.reducer;
 
@@ -58,36 +68,45 @@ export const fetchTxs = createAsyncThunk(
         }
 
         thunkAPI.dispatch(start(1));
-        await downloadAccountIdTransaction(accountId, async (blockHeight) => {
-            getBlock(blockHeight).then(async (block_) => {
-                const block = block_.result;
-                const chunks = await Promise.all(
-                    block.chunks.map(async (chunk) => {
-                        return await getChunk(chunk.chunk_hash);
-                    })
-                );
+        await downloadAccountIdTransaction(
+            accountId,
+            async (blockHeight) => {
+                getBlock(blockHeight).then(async (block_) => {
+                    const block = block_.result;
+                    const chunks = await Promise.all(
+                        block.chunks.map(async (chunk) => {
+                            return await getChunk(chunk.chunk_hash);
+                        })
+                    );
 
-                chunks
-                    .map((chunk) => chunk.result)
-                    .forEach((chunk) => {
-                        chunk.transactions.forEach((tx, index) => {
-                            if (
-                                tx.signer_id === accountId ||
-                                tx.receiver_id === accountId
-                            ) {
-                                thunkAPI.dispatch(
-                                    newTransaction({
-                                        tx,
-                                        block,
-                                        blockHeight,
-                                        index,
-                                    })
-                                );
-                            }
+                    chunks
+                        .map((chunk) => chunk.result)
+                        .forEach((chunk) => {
+                            chunk.transactions.forEach((tx, index) => {
+                                if (
+                                    tx.signer_id === accountId ||
+                                    tx.receiver_id === accountId
+                                ) {
+                                    thunkAPI.dispatch(
+                                        newTransaction({
+                                            tx,
+                                            block,
+                                            blockHeight,
+                                            index,
+                                        })
+                                    );
+                                }
+                            });
                         });
-                    });
-            });
-        });
+                });
+            },
+            (delta) => {
+                thunkAPI.dispatch(updateProgress(delta));
+            },
+            (delta) => {
+                thunkAPI.dispatch(updateProgress(delta));
+            }
+        );
         thunkAPI.dispatch(finish());
     }
 );

@@ -43,24 +43,28 @@ function equalKeyStates(left: KeyState[], right: KeyState[]): boolean {
     return true;
 }
 
-async function parallelSearch(
+async function parallelBinarySearch(
     lo: number,
     hi: number,
     loVal: KeyState[] | null = null,
     hiVal: KeyState[] | null = null,
     compute: (position: number) => Promise<KeyState[]>,
-    step: (position: number) => Promise<void>
+    step: (position: number) => Promise<void>,
+    delta: (delta: number) => void
 ) {
     if (loVal === null) {
         loVal = await compute(lo);
+        delta(1);
         await step(lo);
     }
 
     if (hiVal === null) {
         hiVal = await compute(hi);
+        delta(1);
     }
 
     if (equalKeyStates(loVal, hiVal)) {
+        delta(hi - lo - 1);
         return;
     }
 
@@ -72,20 +76,41 @@ async function parallelSearch(
     const mid = Math.round((lo + hi) / 2);
 
     const midVal = await compute(mid);
+    delta(1);
 
-    const left = parallelSearch(lo, mid, loVal, midVal, compute, step);
-    const right = parallelSearch(mid, hi, midVal, hiVal, compute, step);
+    const left = parallelBinarySearch(
+        lo,
+        mid,
+        loVal,
+        midVal,
+        compute,
+        step,
+        delta
+    );
+    const right = parallelBinarySearch(
+        mid,
+        hi,
+        midVal,
+        hiVal,
+        compute,
+        step,
+        delta
+    );
     await Promise.all([left, right]);
 }
 
 export default async function downloadAccountIdTransaction(
     accountId: AccountId,
-    cb: (block: number) => Promise<void>
+    // Callback to be called on each block `h`, such that keys are different between `h-1` and `h`
+    stepCb: (block: number) => Promise<void>,
+    initProgressCb: (delta: number) => void,
+    deltaProgressCb: (delta: number) => void
 ): Promise<void> {
     const lo = (await genesisConfig()).result.genesis_height;
     const hi = (await getStatus()).result.sync_info.latest_block_height;
 
-    await parallelSearch(
+    initProgressCb(hi - lo + 1);
+    await parallelBinarySearch(
         lo,
         hi,
         null,
@@ -93,6 +118,10 @@ export default async function downloadAccountIdTransaction(
         async (position) => {
             return getKeysState(accountId, position);
         },
-        cb
+        stepCb,
+        deltaProgressCb
     );
+
+    // Finish the progress
+    deltaProgressCb(hi - lo + 1);
 }

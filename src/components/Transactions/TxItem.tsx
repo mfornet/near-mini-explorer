@@ -11,6 +11,7 @@ import { yoctoToNear } from "../../utils/format";
 import { getFunctionCallItem } from "../../library/library";
 import { TxItemBase } from "./TxItemBase";
 
+// TODO: Create card with more information about each transaction
 export default function TxItem(props: { tx: TransactionWithBlock }) {
     // TODO: Handle case of failed transactions
     const { tx, block } = props.tx;
