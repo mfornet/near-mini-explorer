@@ -1,11 +1,11 @@
-import { AccountId, TransactionWithBlock } from "../../near-api/types";
+// import savedData from "../../assets/savedData.json";
+import { AccountId } from "../../near-api/types";
+import { fetchTxs, IndexedTransaction } from "../../actions/TxsAction";
+import { RootState } from "../../store";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 import TxsProgressBar from "./TxsProgressBar";
 import TxsTimelime from "./TxsTimelime";
-import savedData from "../../assets/savedData.json";
-import { fetchTxs, IndexedTransaction } from "../../actions/TxsAction";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store";
-import { useEffect } from "react";
 
 interface ProgressInterface {
     searched: number;
@@ -27,6 +27,7 @@ export default function TxsLoad(props: { accountId: AccountId }) {
         dispatch(fetchTxs(props.accountId));
     }, [dispatch, props.accountId]);
 
+    // TODO: Account not found modal
     return (
         <div>
             <TxsProgressBar

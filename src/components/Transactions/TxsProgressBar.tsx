@@ -3,7 +3,6 @@ import LinearProgress, {
     LinearProgressProps,
 } from "@mui/material/LinearProgress";
 import Box from "@mui/material/Box";
-import { useEffect, useState } from "react";
 
 function LinearProgressWithLabel(
     props: LinearProgressProps & { value: number }
@@ -27,8 +26,6 @@ export default function TxsProgressBar(props: {
     total: number;
     current: number;
 }) {
-    console.log(props);
-
     if (props.total === 0 || props.current >= props.total) {
         return <div></div>;
     }
