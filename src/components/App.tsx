@@ -1,11 +1,16 @@
 import "../assets/App.css";
+import { useParams } from "react-router-dom";
+import Header from "./Header";
 import TxsLoad from "./Transactions/TxsLoad";
 
 function App() {
-    // TODO: Header with NEAR Logo and info from the user
+    const params = useParams();
+    const accountId = params.accountId || "Select an account";
+
     return (
         <div>
-            <TxsLoad accountId="marcelo.near" />
+            <Header accountId={accountId} />
+            <TxsLoad accountId={accountId} />
         </div>
     );
 }

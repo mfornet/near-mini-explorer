@@ -1,3 +1,5 @@
+import { CryptoHash } from "../../near-api/types";
+import { Link } from "@mui/material";
 import TimelineConnector from "@mui/lab/TimelineConnector";
 import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
@@ -5,8 +7,6 @@ import TimelineItem from "@mui/lab/TimelineItem";
 import TimelineOppositeContent from "@mui/lab/TimelineOppositeContent";
 import TimelineSeparator from "@mui/lab/TimelineSeparator";
 import Typography from "@mui/material/Typography";
-import { CryptoHash } from "../../near-api/types";
-import { Link } from "@mui/material";
 
 type ColorType =
     | "inherit"

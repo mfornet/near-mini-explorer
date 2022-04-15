@@ -1,22 +1,26 @@
-import React from "react";
 import "./assets/index.css";
-import App from "./components/App";
-import reportWebVitals from "./utils/reportWebVitals";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Buffer } from "buffer";
-import store from "./store";
-import { Provider } from "react-redux";
-
 import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import App from "./components/App";
+import React from "react";
+import reportWebVitals from "./utils/reportWebVitals";
+import store from "./store";
 
 global.Buffer = Buffer;
 const container = document.getElementById("root");
 const root = createRoot(container!);
 
 root.render(
-    // TODO: Routes: Fetch account id from the URL
     <React.StrictMode>
         <Provider store={store}>
-            <App />
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<App />} />
+                    <Route path=":accountId" element={<App />} />
+                </Routes>
+            </BrowserRouter>
         </Provider>
     </React.StrictMode>
 );

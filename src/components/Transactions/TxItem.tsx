@@ -1,15 +1,15 @@
+import { getFunctionCallItem } from "../../library/library";
+import { TxItemBase } from "./TxItemBase";
+import { yoctoToNear } from "../../utils/format";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import KeyIcon from "@mui/icons-material/Key";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import {
     isInstanceOfAddKey,
     isInstanceOfFunctionCall,
     isInstanceOfTransfer,
     TransactionWithBlock,
 } from "../../near-api/types";
-import { yoctoToNear } from "../../utils/format";
-import { getFunctionCallItem } from "../../library/library";
-import { TxItemBase } from "./TxItemBase";
 
 // TODO: Create card with more information about each transaction
 export default function TxItem(props: { tx: TransactionWithBlock }) {
