@@ -28,9 +28,18 @@ export interface GenesisConfig {
     genesis_height: number;
 }
 
+export interface FunctionCallAccessKey {
+    allowance: U256;
+    method_names: string[];
+    receiver_id: AccountId;
+}
+export interface FunctionCallAccessKeyOuter {
+    FunctionCall: FunctionCallAccessKey;
+}
+
 export interface AccessKey {
     nonce: number;
-    permission: any;
+    permission: "FullAccess" | FunctionCallAccessKeyOuter;
 }
 
 export interface Key {
@@ -69,8 +78,13 @@ export interface ActionTransfer {
         deposit: U256;
     };
 }
+export interface AddKey {
+    access_key: AccessKey;
+    public_key: CryptoHash;
+}
+
 export interface ActionAddKey {
-    AddKey: any;
+    AddKey: AddKey;
 }
 
 export interface ActionFunctionCall {

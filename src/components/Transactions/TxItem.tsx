@@ -45,17 +45,35 @@ export default function TxItem(props: { tx: TransactionWithBlock }) {
     const action = tx.actions[0];
 
     if (isInstanceOfAddKey(action)) {
-        // TODO: Disambiguate between Full Access Key & Function Call Keys
-        return (
-            <TxItemBase
-                icon={<KeyIcon />}
-                hash={tx.hash}
-                color="success"
-                timestamp_nanosec={block.header.timestamp}
-                title="Add Key"
-                description=""
-            />
-        );
+        if (action.AddKey.access_key.permission === "FullAccess") {
+            return (
+                <TxItemBase
+                    icon={<KeyIcon />}
+                    hash={tx.hash}
+                    color="success"
+                    timestamp_nanosec={block.header.timestamp}
+                    title="Add Full Access Key"
+                    description=""
+                />
+            );
+        } else {
+            const permission = action.AddKey.access_key.permission;
+
+            return (
+                <TxItemBase
+                    icon={<KeyIcon />}
+                    hash={tx.hash}
+                    color="success"
+                    timestamp_nanosec={block.header.timestamp}
+                    title="Add Function Call Key"
+                    description={`Contract: ${
+                        permission.FunctionCall.receiver_id
+                    } Allowance: ${yoctoToNear(
+                        permission.FunctionCall.allowance
+                    )} Ⓝ`}
+                />
+            );
+        }
     } else if (isInstanceOfFunctionCall(action)) {
         const result = getFunctionCallItem(action, tx, block);
 

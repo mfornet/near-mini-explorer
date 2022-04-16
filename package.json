@@ -1,5 +1,6 @@
 {
   "name": "account-viewer",
+  "homepage": "https://mfornet.github.io/near-mini-explorer/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -21,6 +22,7 @@
     "@types/request-promise": "^4.1.48",
     "bignumber.js": "^9.0.2",
     "buffer": "^6.0.3",
+    "gh-pages": "^3.2.3",
     "near-api-js": "^0.44.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
@@ -34,6 +36,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

@@ -113,7 +113,7 @@ export default async function downloadAccountIdTransaction(
     await parallelBinarySearch(
         lo,
         hi,
-        null,
+        [],
         null,
         async (position) => {
             return getKeysState(accountId, position);
