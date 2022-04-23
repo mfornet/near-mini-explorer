@@ -1,5 +1,5 @@
-// import savedData from "../../assets/savedData.json";
-import { AccountId } from "../../near-api/types";
+import savedData from "../../assets/savedData.json";
+import { AccountId, TransactionWithBlock } from "../../near-api/types";
 import { fetchTxs, IndexedTransaction } from "../../actions/TxsAction";
 import { RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,19 +13,20 @@ interface ProgressInterface {
 }
 
 export default function TxsLoad(props: { accountId: AccountId }) {
-    // const data = savedData as TransactionWithBlock[];
-    const dispatch = useDispatch();
+    const data = savedData as TransactionWithBlock[];
+    // const dispatch = useDispatch();
 
-    const data = useSelector<RootState, IndexedTransaction[]>(
-        (state) => state.txs.transactions
-    );
+    // const data = useSelector<RootState, IndexedTransaction[]>(
+    //     (state) => state.txs.transactions
+    // );
+
     const progress = useSelector<RootState, ProgressInterface>(
         (state) => state.txs.activeSearch
     );
 
-    useEffect(() => {
-        dispatch(fetchTxs(props.accountId));
-    }, [dispatch, props.accountId]);
+    // useEffect(() => {
+    //     dispatch(fetchTxs(props.accountId));
+    // }, [dispatch, props.accountId]);
 
     // TODO: Account not found modal
     return (
@@ -38,6 +39,7 @@ export default function TxsLoad(props: { accountId: AccountId }) {
                 txs={data
                     .slice()
                     .reverse()
+                    .slice(0, 50)
                     .map((iTx) => {
                         return {
                             tx: iTx.tx,

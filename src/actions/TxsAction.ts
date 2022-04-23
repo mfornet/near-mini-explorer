@@ -58,8 +58,7 @@ export default counterSlice.reducer;
 export const fetchTxs = createAsyncThunk(
     "transactions/fetchTxs",
     async (accountId: string, thunkAPI: any) => {
-        // TODO: Add progress bar for downloading progress
-        // TODO: Handle multiple accounts
+        // TODO: Cache result (from the last time)
         // TODO: Track popular FT (NEP-141) and popular NFT contracts
         const state: RootState = thunkAPI.getState();
 

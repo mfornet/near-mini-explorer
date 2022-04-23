@@ -6,10 +6,12 @@ import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import KeyIcon from "@mui/icons-material/Key";
 import {
     isInstanceOfAddKey,
+    isInstanceOfDeployContract,
     isInstanceOfFunctionCall,
     isInstanceOfTransfer,
     TransactionWithBlock,
 } from "../../near-api/types";
+import { FileUpload } from "@mui/icons-material";
 
 // TODO: Create card with more information about each transaction
 export default function TxItem(props: { tx: TransactionWithBlock }) {
@@ -102,6 +104,17 @@ export default function TxItem(props: { tx: TransactionWithBlock }) {
                 description={`Send ${yoctoToNear(
                     action.Transfer.deposit
                 )} Ⓝ to ${tx.receiver_id}`}
+            />
+        );
+    } else if (isInstanceOfDeployContract(action)) {
+        return (
+            <TxItemBase
+                icon={<FileUpload />}
+                hash={tx.hash}
+                color="success"
+                timestamp_nanosec={block.header.timestamp}
+                title="Deploy Contract"
+                description=""
             />
         );
     } else {

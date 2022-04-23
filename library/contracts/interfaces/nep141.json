@@ -1,0 +1,40 @@
+{
+    "type": "ContractInterface",
+    "filter_by": false,
+    "state": [
+        {
+            "type": "pure",
+            "key": "STATE",
+            "key_encoding": "base64",
+            "state_encoding": {
+                "type": "borsh",
+                "schema": ""
+            }
+        },
+        {
+            "type": "regex"
+        }
+    ],
+    "view_methods": [
+        {
+            "name": "ft_transfer_call",
+            "refresh_frequency": "never",
+            "input": {
+                "type": "json",
+                "json_schema": {},
+                "borsh_schema": {}
+            },
+            "output": {
+                "type": "number"
+            }
+        }
+    ],
+    "change_methods": [
+        {
+            "hidden": true,
+            "private": true,
+            "suggested_gas": "125Tgas",
+            "suggested_balance": "1yoctoNEAR"
+        }
+    ]
+}

@@ -99,6 +99,11 @@ async function parallelBinarySearch(
     await Promise.all([left, right]);
 }
 
+interface Item {
+    position: number;
+    result: KeyState[];
+}
+
 export default async function downloadAccountIdTransaction(
     accountId: AccountId,
     // Callback to be called on each block `h`, such that keys are different between `h-1` and `h`
@@ -109,6 +114,8 @@ export default async function downloadAccountIdTransaction(
     const lo = (await genesisConfig()).result.genesis_height;
     const hi = (await getStatus()).result.sync_info.latest_block_height;
 
+    const reqs: Item[] = [];
+
     initProgressCb(hi - lo + 1);
     await parallelBinarySearch(
         lo,
@@ -116,11 +123,18 @@ export default async function downloadAccountIdTransaction(
         [],
         null,
         async (position) => {
-            return getKeysState(accountId, position);
+            // TODO: Use a pair of keys-state and code-hash. This should cover most of the issues with redeployments.
+            const result = await getKeysState(accountId, position);
+            reqs.push({ position, result });
+            return result;
         },
         stepCb,
         deltaProgressCb
     );
+
+    reqs.sort((a, b) => {
+        return a.position - b.position;
+    });
 
     // Finish the progress
     deltaProgressCb(hi - lo + 1);

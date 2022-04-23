@@ -95,8 +95,17 @@ export interface ActionFunctionCall {
         method_name: string;
     };
 }
+export interface ActionDeployContract {
+    DeployContract: {
+        code: string;
+    };
+}
 
-export type Action = ActionTransfer | ActionAddKey | ActionFunctionCall;
+export type Action =
+    | ActionAddKey
+    | ActionDeployContract
+    | ActionFunctionCall
+    | ActionTransfer;
 
 export function isInstanceOfTransfer(action: Action): action is ActionTransfer {
     return "Transfer" in action;
@@ -112,6 +121,12 @@ export function isInstanceOfFunctionCall(
     return "FunctionCall" in action;
 }
 
+export function isInstanceOfDeployContract(
+    action: Action
+): action is ActionDeployContract {
+    return "DeployContract" in action;
+}
+
 export interface Transaction {
     actions: Action[];
     hash: CryptoHash;
@@ -122,6 +137,7 @@ export interface Transaction {
     signer_id: AccountId;
 }
 
+// TODO: Rename to Context
 export interface TransactionWithBlock {
     tx: Transaction;
     block: Block;
@@ -138,4 +154,11 @@ export interface SyncInfo {
 
 export interface Status {
     sync_info: SyncInfo;
+}
+
+export interface FunctionResult {
+    block_hash: CryptoHash;
+    block_height: number;
+    logs: any[];
+    result: number[];
 }

@@ -1,12 +1,12 @@
 import Timeline from "@mui/lab/Timeline";
 import { TransactionWithBlock } from "../../near-api/types";
-import TxItem from "./TxItem";
+import DynamicTransaction from "./DynamicTransaction";
 
 export default function TxsTimelime(props: { txs: TransactionWithBlock[] }) {
     return (
         <Timeline>
-            {props.txs.map((tx, index) => (
-                <TxItem key={index} tx={tx} />
+            {props.txs.map((ctx, index) => (
+                <DynamicTransaction key={index} ctx={ctx} />
             ))}
         </Timeline>
     );

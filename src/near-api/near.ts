@@ -7,6 +7,8 @@ import {
     NearRpcResultOk,
     GenesisConfig,
     Status,
+    FunctionResult,
+    AccountId,
 } from "./types";
 
 const NODE_URL = "https://archival-rpc.mainnet.near.org/";
@@ -68,4 +70,30 @@ export async function genesisConfig(): Promise<NearRpcResultOk<GenesisConfig>> {
 
 export async function getStatus(): Promise<NearRpcResultOk<Status>> {
     return await nearFetchOk<Status>("status", []);
+}
+
+export async function viewFunction(
+    accountId: AccountId,
+    methodName: string,
+    args: undefined | string | Buffer | any
+): Promise<NearRpcResult<FunctionResult>> {
+    // Make a best effort to encode args
+    let args_base64;
+    if (args === undefined) {
+        args_base64 = Buffer.from([]);
+    } else if (typeof args === "string") {
+        args_base64 = Buffer.from(args, "utf-8");
+    } else if (Buffer.isBuffer(args)) {
+        args_base64 = args;
+    } else {
+        args_base64 = Buffer.from(JSON.stringify(args));
+    }
+
+    return await nearFetch<FunctionResult>("query", {
+        request_type: "call_function",
+        finality: "final",
+        account_id: accountId,
+        method_name: methodName,
+        args_base64: args_base64.toString("base64"),
+    });
 }

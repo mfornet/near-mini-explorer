@@ -1,0 +1,19 @@
+{
+    "type": "ContractInterface",
+    "filter_by": {
+        "contract_id": "aurora"
+    },
+    "extends": [
+        "interfaces/nep141.json"
+    ],
+    "state": [
+        {
+            "type": "pure|regex",
+            "key": "STATE",
+            "key-encoding": "utf8",
+            "state-encoding": "binary|json-with-schema|borsh-with-schema"
+        }
+    ],
+    "view_methods": [],
+    "change_methods": []
+}

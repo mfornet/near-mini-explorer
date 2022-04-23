@@ -8,7 +8,7 @@ import TimelineOppositeContent from "@mui/lab/TimelineOppositeContent";
 import TimelineSeparator from "@mui/lab/TimelineSeparator";
 import Typography from "@mui/material/Typography";
 
-type ColorType =
+export type ColorType =
     | "inherit"
     | "grey"
     | "primary"
@@ -23,8 +23,8 @@ export function TxItemBase(props: {
     timestamp_nanosec: number;
     color: ColorType;
     icon: JSX.Element;
-    title: string;
-    description: string;
+    title: string | JSX.Element;
+    description: string | JSX.Element;
 }) {
     return (
         <TimelineItem>
@@ -51,7 +51,7 @@ export function TxItemBase(props: {
                 <Typography variant="h6" component="span">
                     {props.title}
                 </Typography>
-                <Typography>{props.description}</Typography>
+                <Typography component="span">{props.description}</Typography>
             </TimelineContent>
         </TimelineItem>
     );
