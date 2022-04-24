@@ -36,6 +36,32 @@
                 }
             ],
             "description": "Send $amount $symbol to $receiver"
+        },
+        {
+            "type": "TransactionDescription",
+            "title": "Wrap NEAR",
+            "filter_by": {
+                "contract": "wrap.near",
+                "method": "near_deposit"
+            },
+            "mui_icon": {
+                "name": "LocalPostOffice",
+                "color": "warning"
+            },
+            "input_schema": {
+                "type": "json"
+            },
+            "variables": [
+                {
+                    "name": "debug",
+                    "value": "${NEAR/Debug}"
+                },
+                {
+                    "name": "amount",
+                    "value": "${NEAR/Token,amount:$transaction.deposit}"
+                }
+            ],
+            "description": "Wrapped $amount"
         }
     ]
 }

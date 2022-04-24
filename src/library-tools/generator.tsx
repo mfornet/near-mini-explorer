@@ -46,7 +46,7 @@ function populateSubstitutes(items: Ast, vars: Map<string, string>): Ast2 {
     });
 }
 
-function buildJsx(items: Ast2): JSX.Element {
+function buildJsx(items: Ast2, ctx: TransactionWithBlock): JSX.Element {
     return (
         <div>
             {items.map((item, index) => {
@@ -60,6 +60,7 @@ function buildJsx(items: Ast2): JSX.Element {
                     return (
                         <Component
                             key={index}
+                            ctx={ctx}
                             {...reactComponentArgumentAsProps(item.arguments)}
                         />
                     );
@@ -69,9 +70,13 @@ function buildJsx(items: Ast2): JSX.Element {
     );
 }
 
-function buildFromAst(items: Ast, vars: Map<string, string>): JSX.Element {
+function buildFromAst(
+    items: Ast,
+    vars: Map<string, string>,
+    ctx: TransactionWithBlock
+): JSX.Element {
     const items2 = populateSubstitutes(items, vars);
-    return buildJsx(items2);
+    return buildJsx(items2, ctx);
 }
 
 function parseJson(args: any, prefix: string, vars: Map<string, string>) {
@@ -112,6 +117,7 @@ export function generateTransaction(
     // Parse arguments from Function Calls
     ctx.tx.actions.forEach((action) => {
         if (isInstanceOfFunctionCall(action)) {
+            vars.set("transaction.deposit", action.FunctionCall.deposit);
             parseArguments(item.input_schema, action.FunctionCall.args, vars);
         }
     });
@@ -122,9 +128,9 @@ export function generateTransaction(
 
     return {
         type: "TransactionReactItem",
-        title: buildFromAst(item.title, vars),
+        title: buildFromAst(item.title, vars, ctx),
         icon_color: item.mui_icon.color || "grey",
         icon,
-        description: buildFromAst(item.description, vars),
+        description: buildFromAst(item.description, vars, ctx),
     };
 }
