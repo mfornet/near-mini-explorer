@@ -7,26 +7,33 @@ import { useEffect } from "react";
 import TxsProgressBar from "./TxsProgressBar";
 import TxsTimelime from "./TxsTimelime";
 
+const USE_OFFLINE_MODE = false;
 interface ProgressInterface {
     searched: number;
     rangeSize: number;
 }
 
 export default function TxsLoad(props: { accountId: AccountId }) {
-    const data = savedData as TransactionWithBlock[];
-    // const dispatch = useDispatch();
-
-    // const data = useSelector<RootState, IndexedTransaction[]>(
-    //     (state) => state.txs.transactions
-    // );
-
     const progress = useSelector<RootState, ProgressInterface>(
         (state) => state.txs.activeSearch
     );
 
-    // useEffect(() => {
-    //     dispatch(fetchTxs(props.accountId));
-    // }, [dispatch, props.accountId]);
+    let data;
+
+    if (USE_OFFLINE_MODE) {
+        data = savedData as TransactionWithBlock[];
+    } else {
+        // eslint-disable-next-line
+        const dispatch = useDispatch();
+        // eslint-disable-next-line
+        data = useSelector<RootState, IndexedTransaction[]>(
+            (state) => state.txs.transactions
+        );
+        // eslint-disable-next-line
+        useEffect(() => {
+            dispatch(fetchTxs(props.accountId));
+        }, [dispatch, props.accountId]);
+    }
 
     // TODO: Account not found modal
     return (
@@ -39,7 +46,6 @@ export default function TxsLoad(props: { accountId: AccountId }) {
                 txs={data
                     .slice()
                     .reverse()
-                    .slice(0, 50)
                     .map((iTx) => {
                         return {
                             tx: iTx.tx,

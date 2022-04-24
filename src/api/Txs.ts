@@ -96,6 +96,8 @@ async function parallelBinarySearch(
         step,
         delta
     );
+
+    // TODO: Less invasive changes (have a limited amount of requests (e.g. 10) and prioritize the ones that are close to the target)
     await Promise.all([left, right]);
 }
 

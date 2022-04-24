@@ -1,0 +1,17 @@
+{
+    "type": "TransactionDescription",
+    "title": "Deploy Bridge Token on NEAR",
+    "filter_by": {
+        "contract": "factory.bridge.near",
+        "method": "deploy_bridge_token"
+    },
+    "mui_icon": {
+        "name": "Looks",
+        "color": "success"
+    },
+    "input_schema": {
+        "type": "json"
+    },
+    "variables": [],
+    "description": "Token address $args.address"
+}
