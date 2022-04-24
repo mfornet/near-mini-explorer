@@ -19,7 +19,6 @@ export function parseItem(content: ItemDefinition): TransactionItem {
         type: "TransactionItem",
         title: buildElement(content.title, variables),
         mui_icon: content.mui_icon,
-        filter_by: content.filter_by,
         input_schema: content.input_schema,
         description: buildElement(content.description, variables),
     };

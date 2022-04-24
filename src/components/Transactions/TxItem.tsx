@@ -1,3 +1,4 @@
+// TODO: DELETE ME (the file)
 import { getFunctionCallItem } from "../../library/library";
 import { TxItemBase } from "./TxItemBase";
 import { yoctoToNear } from "../../utils/format";

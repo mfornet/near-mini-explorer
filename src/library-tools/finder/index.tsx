@@ -22,6 +22,7 @@ import {
     Key,
     QuestionAnswer,
 } from "@mui/icons-material";
+import { content } from "../loader";
 
 type ComponentDescription = TransactionItem | TransactionReactItem;
 
@@ -128,8 +129,23 @@ function findComponentFromFunctionCall(
     ctx: TransactionWithBlock,
     action: ActionFunctionCall
 ): ComponentDescription {
-    // TODO: Try to find transaction from list
-    //  Filter by: contract | contract.method | subcontract | subcontract.method | method
+    // TODO: Use filters in this order:  contract.method | contract | method | base_contract.method | base_contract
+
+    const keys = [
+        `${ctx.tx.receiver_id}.${action.FunctionCall.method_name}`,
+        `${ctx.tx.receiver_id}`,
+        `${action.FunctionCall.method_name}`,
+    ];
+
+    if (content.byContractMethod.has(keys[0])) {
+        return content.byContractMethod.get(keys[0])!;
+    } else if (content.byContract.has(keys[1])) {
+        return content.byContract.get(keys[1])!;
+    } else if (content.byMethod.has(keys[2])) {
+        return content.byMethod.get(keys[2])!;
+    }
+
+    // TODO: Implement for base contracts (relevant for contracts generated from factories like bridge tokens && lockups)
 
     return {
         type: "TransactionReactItem",

@@ -1,5 +1,4 @@
 import { Components } from "../components/Api";
-import { HelpOutlineOutlined } from "@mui/icons-material";
 import {
     TransactionWithBlock,
     isInstanceOfFunctionCall,
@@ -15,6 +14,7 @@ import {
     InputSchema,
 } from "./types";
 import { collapseString } from "./ast";
+import { getIcon } from "./mui_icon_finder";
 
 function reactComponentArgumentAsProps(args: ReactComponent2Argument[]): any {
     const props: any = {};
@@ -118,8 +118,7 @@ export function generateTransaction(
 
     vars.set("transaction.receiver_id", ctx.tx.receiver_id);
 
-    // TODO: Make an icon finder
-    const icon = <HelpOutlineOutlined />;
+    const icon = getIcon(item.mui_icon.name);
 
     return {
         type: "TransactionReactItem",

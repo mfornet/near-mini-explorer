@@ -1,11 +1,12 @@
 import { ColorType } from "../components/Transactions/TxItemBase";
 
-type ItemType = "Transaction Item";
+type ItemType = "TransactionDescription";
 
 export interface Filters {
     action_type?: string;
     method?: string;
     contract?: string;
+    base_contract?: string;
 }
 
 export interface MuiIcon {
@@ -38,7 +39,6 @@ export interface TransactionItem {
     type: "TransactionItem";
     title: Ast;
     mui_icon: MuiIcon;
-    filter_by: Filters;
     input_schema: InputSchema;
     description: Ast;
 }
