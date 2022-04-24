@@ -1,21 +1,37 @@
 {
     "type": "TransactionDescription",
-    "title": "FT Transfer Call",
+    "title": "FT Transfer Call ($name)",
     "filter_by": {
-        "action_type": "FunctionCall",
         "method": "ft_transfer_call"
     },
     "mui_icon": {
-        "name": "CurrencyExchangeIcon",
+        "name": "CurrencyExchange",
         "color": "warning"
     },
-    "variables": {
-        "token": "$transaction.receiver_id",
-        "raw_amount": "$args.amount",
-        "amount": "${Nep141-Amount,token:$token,amount:$raw_amount}",
-        "symbol": "${Nep141-Symbol,token:$token}",
-        "name": "${Nep141-Name,token:$token}",
-        "receiver": "$args.receiver"
+    "input_schema": {
+        "type": "json"
     },
-    "description": "($token). Send $amount $symbol to $receiver"
+    "variables": [
+        {
+            "name": "token",
+            "value": "$transaction.receiver_id"
+        },
+        {
+            "name": "amount",
+            "value": "${Nep141/Amount,token:$token,amount:$args.amount}"
+        },
+        {
+            "name": "symbol",
+            "value": "${Nep141/Symbol,token:$token}"
+        },
+        {
+            "name": "name",
+            "value": "${Nep141/Name,token:$token}"
+        },
+        {
+            "name": "receiver",
+            "value": "$args.receiver_id"
+        }
+    ],
+    "description": "Send $amount $symbol to $receiver"
 }
