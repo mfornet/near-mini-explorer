@@ -79,11 +79,12 @@ function buildFromAst(
     return buildJsx(items2, ctx);
 }
 
+// TODO: Instead of parsing the whole json directly, from the beginning, create `function projectJson(args, key) that fetches data from args based on key
+// For example projectJson({value: {total: [1, 2, 3]}}, ".value.total[2]") should return 3
 function parseJson(args: any, prefix: string, vars: Map<string, string>) {
     if (typeof args === "string") {
         vars.set(prefix, args);
     } else if (args instanceof Array) {
-        // TODO:
     } else if (typeof args === "object") {
         for (let key in args) {
             parseJson(args[key], `${prefix}.${key}`, vars);

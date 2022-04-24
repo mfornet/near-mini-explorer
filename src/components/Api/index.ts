@@ -1,3 +1,4 @@
+// TODO: Fill components using reflection (or something similar) See here(https://github.com/Hookyns/tst-reflect)
 import { Token } from "./NEAR/Token";
 import { Contract } from "./NEAR/Contract";
 import { Debug } from "./NEAR/Debug";
@@ -12,7 +13,6 @@ export { Amount } from "./Nep141/Amount";
 export { Name } from "./Nep141/Name";
 export { Symbol } from "./Nep141/Symbol";
 
-// TODO: Fill components using reflection (or something similar)
 export const Components = new Map<string, (props: any) => JSX.Element>();
 
 Components.set("NEAR/Token", Token);

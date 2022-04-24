@@ -75,7 +75,7 @@
                 },
                 {
                     "name": "receiver",
-                    "value": "$args.receiver_id"
+                    "value": "${NEAR/Contract,accountId:$args.receiver_id}"
                 }
             ],
             "description": "Send $amount $symbol to $receiver"

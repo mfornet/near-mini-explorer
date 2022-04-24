@@ -39,6 +39,7 @@ export function findComponent(ctx: TransactionWithBlock): ComponentDescription {
         return findComponentFromAction(ctx, ctx.tx.actions[0]);
     } else {
         // TODO: Handle the case when the number of actions is !== 1
+        //       The idea is to have on entry per action, and make a visual cue that they are all part of the same transaction
         return unknownComponent(
             `Transaction with ${ctx.tx.actions.length} actions`
         );
