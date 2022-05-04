@@ -1,5 +1,4 @@
 {
-    "type": "TransactionDescription",
     "title": "Deploy Bridge Token on NEAR",
     "filter_by": {
         "contract": "factory.bridge.near",
